@@ -2,7 +2,7 @@
 Class for Telegram bot object.
 """
 
-from settings import ACCESS_TOKEN
+from ScrambledWordsBot.bot.settings import ACCESS_TOKEN
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, Filters
 from telegram.ext import CommandHandler
@@ -13,12 +13,14 @@ from telegram.update import Update
 from ScrambledWordsBot.game.mechanics.game_mechanic import GameMechanic
 from ScrambledWordsBot.database.players.players import Player
 from ScrambledWordsBot.database.words.words import Word
+from ScrambledWordsBot.bot.log.path import LOG_PATH
+import os
 import re
 import time
 import logging
 
 INSUFFICIENT_PERMISSIONS_TEXT = "You don't have permission to send this command."
-logging.basicConfig(filename='log/bot_logs.log', level=logging.DEBUG)
+logging.basicConfig(filename=os.path.join(LOG_PATH, 'bot_logs.log'), level=logging.DEBUG)
 
 
 class Bot:
