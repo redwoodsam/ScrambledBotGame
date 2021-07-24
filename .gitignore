@@ -1,0 +1,6 @@
+*.log
+*.pyc
+__pychache__
+settings.py
+players.db
+word_bank.db
