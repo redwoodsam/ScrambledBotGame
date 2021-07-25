@@ -6,10 +6,10 @@ An Awesome Scrambled word game bot for Telegram powered with database and leader
 Dependencies:
 =============
 
--Python 3.7
--python-telegram-bot
--pymysql
--sqlalchemy
+- Python 3.7
+- python-telegram-bot
+- pymysql
+- sqlalchemy
 
 How to run:
 ===========
@@ -21,5 +21,5 @@ How to run:
 Contact:
 ========
 
--Email: redwoodsamuel@gmail.com
--Telegram: @redwoodsam
+- Email: redwoodsamuel@gmail.com
+- Telegram: @redwoodsam
