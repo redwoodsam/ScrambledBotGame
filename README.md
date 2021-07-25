@@ -15,7 +15,7 @@ How to run:
 ===========
 
 - Inside the bot folder, rename the settings.py.sample.py to 'settings.py' and insert your access token in its variable.
-- Inside the database folder, rename the db_settings_sample.py to 'db_settings.py' and insert your database connection informations inside the variables
+- Inside the database folder, rename the db_settings_sample.py to 'db_settings.py' and insert your database connection informations inside the variables.
 - Run main.py
 
 Contact:
