@@ -10,6 +10,12 @@ Python 3.7
 python-telegram-bot
 sqlalchemy
 
+How to run:
+===========
+
+- Inside the bot folder, rename the settings.py.sample.py to 'settings.py' and insert your access token in its variable.
+- Run main.py
+
 Contact:
 ========
 
