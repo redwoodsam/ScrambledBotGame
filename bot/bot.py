@@ -186,7 +186,8 @@ class Bot:
 
         try:
             if not self._players.check_if_player_exists(update.message.from_user.username):
-                self._players.add_player(update.message.from_user.id, update.message.from_user.first_name,
+                self._players.add_player(update.message.from_user.id, update.message.from_user.first_name.encode
+                ('utf-8', errors='ignore'),
                                          update.message.from_user.last_name, update.message.from_user.username)
 
         except Exception as e:
@@ -225,7 +226,7 @@ class Bot:
                         self._players.add_highest_score(update.message.from_user.id, self._game.get_score())
                         update.message.reply_text(
                             f"You have a new High Score !!!\n"
-                            f"New HiScore: {user_hiscore} points."
+                            f"New HiScore: {self._game.get_score()} points."
                         )
 
                     self._game.reset_game()
@@ -249,7 +250,7 @@ class Bot:
         """
         if self._is_admin(update.message.from_user.username):
             original_word = self._join_arguments(context.args)
-            pattern = re.search(r'^([a-zA-z])\s([a-zA-z\s\d.-]+)$', original_word)
+            pattern = re.search(r'^([a-zA-z]+)\s([\w\s\d.-]+)$', original_word)
             word = pattern.group(1)
             tip = pattern.group(2)
 
@@ -323,7 +324,7 @@ class Bot:
 
         returned_stats = f"""
         ========STATS========\n\nName: {stats["name"]} {stats["last_name"]}\nUsername: @{update.message.from_user.
-            username}\nXP: {stats['xp']}\nHiscore: {stats["hiscore"]} points"""
+            username}\nXP: {stats['xp']}\nCurrent score: {self._game.get_score()}\nHiscore: {stats["hiscore"]} points"""
 
         update.message.reply_text(returned_stats)
 

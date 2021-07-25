@@ -2,17 +2,17 @@
 Class to manage the words database.
 """
 
+from ScrambledWordsBot.database.db_settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING
 from sqlalchemy import Column, String, Integer
 from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from ScrambledWordsBot.database.words.path import WORDS_PATH
-import os
 
 
 # Setting the initial things to create the database
-engine = create_engine(f'sqlite:///' + os.path.join(WORDS_PATH, 'word_bank.db'), echo=False)
+engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}',
+                       echo=False)
 Base = declarative_base()
 
 
@@ -21,8 +21,8 @@ class Word(Base):
 
     # Setting up the tables
     id = Column(Integer, primary_key=True, autoincrement=True)
-    word = Column(String, unique=True, nullable=False)
-    tip = Column(String, unique=True, nullable=False)
+    word = Column(String(20), unique=True, nullable=False)
+    tip = Column(String(30), unique=True, nullable=False)
 
     def get_word(self) -> str:
         """

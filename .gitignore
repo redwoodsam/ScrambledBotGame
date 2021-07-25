@@ -4,3 +4,4 @@ __pychache__
 settings.py
 players.db
 word_bank.db
+db_settings.py

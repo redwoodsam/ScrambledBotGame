@@ -1,15 +1,15 @@
 """
 Class defining the player database and its management functions
 """
-import os.path
-from ScrambledWordsBot.database.players.path import PLAYERS_PATH
+from ScrambledWordsBot.database.db_settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING
 from sqlalchemy import create_engine
-from sqlalchemy import Column, Integer, BigInteger, String, Boolean
+from sqlalchemy import Column, BigInteger, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Set the initial things to create the database
-engine = create_engine('sqlite:///' + os.path.join(PLAYERS_PATH, 'players.db'), echo=False)
+engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}',
+                       echo=False)
 Base = declarative_base()
 
 
@@ -18,12 +18,12 @@ class Player(Base):
 
     __tablename__ = 'players'
 
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, primary_key=True, autoincrement=True)
     chat_id = Column(BigInteger, unique=True, nullable=False)
     is_admin = Column(Boolean, default=False)
-    first_name = Column(String)
-    last_name = Column(String)
-    username = Column(String, unique=True, nullable=False)
+    first_name = Column(String(20))
+    last_name = Column(String(30))
+    username = Column(String(15), unique=True, nullable=False)
     xp = Column(BigInteger, default=0)
     highest_score = Column(BigInteger, default=0)
 
