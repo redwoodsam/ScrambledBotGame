@@ -3,14 +3,13 @@ Class for the word generator
 """
 
 import random
-from ScrambledWordsBot.database.words.words import Word
 
 
 class WordGenerator:
 
     # Method to get a new word from the generator
-    def __init__(self, **kwargs) -> None:
-        self._word_bank = Word()
+    def __init__(self, word_db, **kwargs) -> None:
+        self._word_bank = word_db
         self._generated_word = ""
         self._scrambled_word = []
 

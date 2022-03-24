@@ -1,20 +1,32 @@
 """
 Class defining the player database and its management functions
 """
-from ScrambledWordsBot.database.db_settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING
 from sqlalchemy import create_engine
 from sqlalchemy import Column, BigInteger, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 # Set the initial things to create the database
-engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}',
-                       echo=False)
 Base = declarative_base()
 
 
 # Defining the database body and its methods
 class Player(Base):
+
+    def __init__(self, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING) -> None:
+        self.DB_HOST = DB_HOST
+        self.DB_PORT = DB_PORT
+        self.DB_NAME = DB_NAME
+        self.DB_USER = DB_USER
+        self.DB_PASSWORD = DB_PASSWORD
+        self.DB_ENCODING = DB_ENCODING
+        self.engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}',
+                            echo=False)
+
+    
+    def start_db(self):
+        # Create the tables
+        Base.metadata.create_all(self.engine)
 
     __tablename__ = 'players'
 
@@ -33,7 +45,7 @@ class Player(Base):
         Checks if a player exists in the database.
         """
         # Creating the session
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         player = session.query(Player).filter(Player.username == username).first()
@@ -48,7 +60,7 @@ class Player(Base):
         Adds a player into the database.
         """
         # Creating the session
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         # Adding the player to the session
@@ -63,7 +75,7 @@ class Player(Base):
         """
         Checks if a specified player is an admin.
         """
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         player = session.query(Player).filter(Player.username == username).first()
@@ -83,7 +95,7 @@ class Player(Base):
         Grants admin status to a player.
         """
         try:
-            Session = sessionmaker(bind=engine)
+            Session = sessionmaker(bind=self.engine)
             session = Session()
 
             player = session.query(Player).filter(Player.username == username).first()
@@ -101,7 +113,7 @@ class Player(Base):
         Adds points to the player's experience stat.
         """
 
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         # Adds one point to the player's experience.
@@ -117,7 +129,7 @@ class Player(Base):
         """
         Adds the current highest score of a player.
         """
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         # Queries the player based on the given chat_id and stores in a variable
@@ -134,7 +146,7 @@ class Player(Base):
         Gets the current leaderboard of the game.
         """
         leaderboard = []
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
         count = 1
 
@@ -150,7 +162,7 @@ class Player(Base):
         """
         Gets the statistics of a specific player.
         """
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         player = session.query(Player).filter(Player.chat_id == chat_id).first()
@@ -165,5 +177,4 @@ class Player(Base):
         return stats
 
 
-# Create the tables
-Base.metadata.create_all(engine)
+

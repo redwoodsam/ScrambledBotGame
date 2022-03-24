@@ -2,7 +2,6 @@
 Class for Telegram bot object.
 """
 
-from ScrambledWordsBot.bot.settings import ACCESS_TOKEN
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, Filters
 from telegram.ext import CommandHandler
@@ -10,26 +9,27 @@ from telegram.ext import CallbackQueryHandler
 from telegram.ext import MessageHandler
 from telegram.ext.callbackcontext import CallbackContext
 from telegram.update import Update
-from ScrambledWordsBot.game.mechanics.game_mechanic import GameMechanic
-from ScrambledWordsBot.database.players.players import Player
-from ScrambledWordsBot.database.words.words import Word
-from ScrambledWordsBot.bot.log.path import LOG_PATH
 import os
 import re
 import time
 import logging
 
-INSUFFICIENT_PERMISSIONS_TEXT = "You don't have permission to send this command."
-logging.basicConfig(filename=os.path.join(LOG_PATH, 'bot_logs.log'), level=logging.DEBUG)
 
 
 class Bot:
-    def __init__(self) -> None:
+    def __init__(self, ACCESS_TOKEN, game_mechanic, players_db, words_db, LOG_PATH) -> None:
         self._access_token = ACCESS_TOKEN
+        self.game_mechanic = game_mechanic
+        self.players_db = players_db
+        self.words_db = words_db
+        self.LOG_PATH = LOG_PATH
         self._START_BUTTON, self._TIP_BUTTON, self._SKIP_BUTTON = range(3)
-        self._players = Player()
-        self._words = Word()
-        self._game = GameMechanic()
+        self._players = players_db
+        self._words = words_db
+        self._game = self.game_mechanic
+
+        self.INSUFFICIENT_PERMISSIONS_TEXT = "You don't have permission to send this command."
+        logging.basicConfig(filename=os.path.join(self.LOG_PATH, 'bot_logs.log'), level=logging.DEBUG)
 
         # Instance of the Telegram's Updater class, it receives our Access token.
         # The use_context argument sets the Telegram's backward compatibility to True.
@@ -263,10 +263,10 @@ class Bot:
                     update.message.reply_text(f"An error occurred when adding the word: {e.args}")
 
         else:
-            update.message.reply_text(text=INSUFFICIENT_PERMISSIONS_TEXT,
+            update.message.reply_text(text=self.INSUFFICIENT_PERMISSIONS_TEXT,
                                       reply_to_message_id=update.message.from_user.id)
             logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
-                            f" {__name__} command and got: {INSUFFICIENT_PERMISSIONS_TEXT}")
+                            f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
 
     def _get_word(self, update: Update, context: CallbackContext):
         """
@@ -275,9 +275,9 @@ class Bot:
         if self._is_admin(update.message.from_user.username):
             update.message.reply_text(self._words.get_word())
         else:
-            update.message.reply_text(INSUFFICIENT_PERMISSIONS_TEXT)
+            update.message.reply_text(self.INSUFFICIENT_PERMISSIONS_TEXT)
             logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
-                            f" {__name__} command and got: {INSUFFICIENT_PERMISSIONS_TEXT}")
+                            f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
 
     def _make_admin(self, update: Update, context: CallbackContext):
         """
@@ -294,9 +294,9 @@ class Bot:
             else:
                 update.message.reply_text("User not found, check the username and try again.")
         else:
-            update.message.reply_text(INSUFFICIENT_PERMISSIONS_TEXT)
+            update.message.reply_text(self.INSUFFICIENT_PERMISSIONS_TEXT)
             logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
-                            f" {__name__} command and got: {INSUFFICIENT_PERMISSIONS_TEXT}")
+                            f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
 
     def _echo_word(self, update: Update, context: CallbackContext):
         """
@@ -334,8 +334,8 @@ class Bot:
         """
         try:
             self._updater.start_polling()
-            print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={ACCESS_TOKEN}!")
-            logging.info(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={ACCESS_TOKEN}!")
+            print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self.ACCESS_TOKEN}!")
+            logging.info(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self.ACCESS_TOKEN}!")
         except Exception as e:
             logging.exception(e.args)
             print(e.args)

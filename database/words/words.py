@@ -2,7 +2,6 @@
 Class to manage the words database.
 """
 
-from ScrambledWordsBot.database.db_settings import DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING
 from sqlalchemy import Column, String, Integer
 from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import func
@@ -11,12 +10,21 @@ from sqlalchemy.orm import sessionmaker
 
 
 # Setting the initial things to create the database
-engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}',
-                       echo=False)
 Base = declarative_base()
 
 
 class Word(Base):
+
+    def __init__(self, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING):
+        self.DB_HOST = DB_HOST
+        self.DB_PORT = DB_PORT
+        self.DB_NAME = DB_NAME
+        self.DB_USER = DB_USER
+        self.DB_PASSWORD = DB_PASSWORD
+        self.DB_ENCODING = DB_ENCODING
+        self.engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}', echo=False)
+        
+
     __tablename__ = 'words'
 
     # Setting up the tables
@@ -24,11 +32,14 @@ class Word(Base):
     word = Column(String(20), unique=True, nullable=False)
     tip = Column(String(30), unique=True, nullable=False)
 
+    def start_db(self) -> None:
+        Base.metadata.create_all(self.engine)
+
     def get_word(self) -> str:
         """
         Fetches a random word from the database and return it.
         """
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         random_word = session.query(Word).order_by(func.random()).first()
@@ -42,7 +53,7 @@ class Word(Base):
         Adds a new word to the database alongside with its tip.
         """
 
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
         try:
             word = Word(word=word, tip=tip)
@@ -60,7 +71,7 @@ class Word(Base):
         """
         Returns the tip from a specific word in the database
         """
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         specified_word = session.query(Word).filter(Word.word == word).first()
@@ -73,7 +84,7 @@ class Word(Base):
         """
         Sets a new tip for a specified word in the database
         """
-        Session = sessionmaker(bind=engine)
+        Session = sessionmaker(bind=self.engine)
         session = Session()
 
         specified_word = session.query(Word).filter(Word.word == word).first()
@@ -88,5 +99,5 @@ class Word(Base):
             return True
 
 
-Base.metadata.create_all(engine)
+
 

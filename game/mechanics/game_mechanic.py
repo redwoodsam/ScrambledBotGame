@@ -2,11 +2,9 @@
 Class setting up the mechanics of the game.
 """
 
-from ScrambledWordsBot.game.word_generator import WordGenerator
-
 class GameMechanic:
-    def __init__(self) -> None:
-        self._word_generator = WordGenerator()
+    def __init__(self, word_generator) -> None:
+        self._word_generator = word_generator
         self._score = 0
         self._original_word = self._word_generator.get_original_word()
         self._scrambled_word = self._word_generator.get_scrambled_word()
