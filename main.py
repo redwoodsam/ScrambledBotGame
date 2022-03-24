@@ -9,9 +9,6 @@ from bot.log.path import LOG_PATH
 word_db = Word(DB_HOST=DB_HOST, DB_PORT=DB_PORT, DB_NAME=DB_NAME, DB_USER=DB_USER, DB_PASSWORD=DB_PASSWORD, DB_ENCODING=DB_ENCODING)
 player_db = Player(DB_HOST=DB_HOST, DB_PORT=DB_PORT, DB_NAME=DB_NAME, DB_USER=DB_USER, DB_PASSWORD=DB_PASSWORD, DB_ENCODING=DB_ENCODING)
 
-word_db.start_db()
-player_db.start_db()
-
 word_generator = WordGenerator(word_db=word_db)
 
 

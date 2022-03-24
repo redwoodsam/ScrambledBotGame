@@ -23,6 +23,7 @@ class Word(Base):
         self.DB_PASSWORD = DB_PASSWORD
         self.DB_ENCODING = DB_ENCODING
         self.engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}', echo=False)
+        self.start_db()
         
 
     __tablename__ = 'words'
