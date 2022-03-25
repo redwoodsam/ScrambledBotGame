@@ -14,6 +14,7 @@ Base = declarative_base()
 class Player(Base):
 
     def __init__(self, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING) -> None:
+        super().__init__()
         self.DB_HOST = DB_HOST
         self.DB_PORT = DB_PORT
         self.DB_NAME = DB_NAME
@@ -64,13 +65,18 @@ class Player(Base):
         Session = sessionmaker(bind=self.engine)
         session = Session()
 
-        # Adding the player to the session
-        player = Player(chat_id=chat_id, username=username, first_name=first_name, last_name=last_name)
-        session.add(player)
+        try:
+            # Adding the player to the session
+            player = Player(chat_id=chat_id, username=username, first_name=first_name, last_name=last_name)
+            session.add(player)
 
-        # Sending the data to the database and closing the session
-        session.commit()
-        session.close()
+            # Sending the data to the database and closing the session
+            session.commit()
+            session.close()
+
+        except Exception as e:
+            session.close()
+            print(e)
 
     def check_admin(self, username):
         """

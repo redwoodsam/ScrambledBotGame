@@ -2,6 +2,7 @@
 Class for Telegram bot object.
 """
 
+from email import message
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, Filters
 from telegram.ext import CommandHandler
@@ -20,12 +21,10 @@ class Bot:
     def __init__(self, ACCESS_TOKEN, game_mechanic, players_db, words_db, LOG_PATH) -> None:
         self._access_token = ACCESS_TOKEN
         self.game_mechanic = game_mechanic
-        self.players_db = players_db
-        self.words_db = words_db
+        self._words = words_db
+        self._players = players_db
         self.LOG_PATH = LOG_PATH
         self._START_BUTTON, self._TIP_BUTTON, self._SKIP_BUTTON = range(3)
-        self._players = players_db
-        self._words = words_db
         self._game = self.game_mechanic
 
         self.INSUFFICIENT_PERMISSIONS_TEXT = "You don't have permission to send this command."
@@ -186,9 +185,11 @@ class Bot:
 
         try:
             if not self._players.check_if_player_exists(update.message.from_user.username):
-                self._players.add_player(update.message.from_user.id, update.message.from_user.first_name.encode
-                ('utf-8', errors='ignore'),
-                                         update.message.from_user.last_name, update.message.from_user.username)
+                self._players.add_player(
+                    chat_id=update.message.from_user.id, 
+                    first_name=update.message.from_user.first_name.encode('utf-8', errors='ignore'),
+                    last_name=update.message.from_user.last_name, username=update.message.from_user.username
+                )
 
         except Exception as e:
             update.message.reply_text(f'Error adding player to the database: {e.args}.')
@@ -334,8 +335,8 @@ class Bot:
         """
         try:
             self._updater.start_polling()
-            print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self.ACCESS_TOKEN}!")
-            logging.info(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self.ACCESS_TOKEN}!")
+            print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
+            logging.info(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
         except Exception as e:
             logging.exception(e.args)
             print(e.args)

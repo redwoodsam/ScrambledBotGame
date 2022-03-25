@@ -31,10 +31,12 @@ class Word(Base):
     # Setting up the tables
     id = Column(Integer, primary_key=True, autoincrement=True)
     word = Column(String(20), unique=True, nullable=False)
-    tip = Column(String(30), unique=True, nullable=False)
+    tip = Column(String(100), unique=True, nullable=False)
 
     def start_db(self) -> None:
         Base.metadata.create_all(self.engine)
+        self.get_word()
+
 
     def get_word(self) -> str:
         """
