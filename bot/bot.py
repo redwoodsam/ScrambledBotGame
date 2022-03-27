@@ -374,10 +374,10 @@ class Bot:
             self._updater.start_webhook(
                 listen='0.0.0.0',
                 port=int(self._webhook_port),
-                url_path=self._access_token
+                url_path=self._access_token,
+                webhook_url='https://scrambledwordsbot.herokuapp.com/' + self._access_token
                 )
-            
-            self._updater.bot.setWebhook('https://scrambledwordsbot.herokuapp.com/' + self._access_token)
+
             print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
             logging.info(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
         except Exception as e:
