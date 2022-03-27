@@ -96,8 +96,8 @@ class Bot:
         """
 
         update.message.reply_text(
-            f"*                                                  "
-            f"Hello, {update.message.from_user.first_name}!                                   "
+            f"*                                            "
+            f"Hello, {update.message.from_user.first_name}!                            "
             f"                 *\n"
             f"\n"
             f"\n"

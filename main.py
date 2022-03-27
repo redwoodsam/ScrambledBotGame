@@ -7,7 +7,7 @@ from game.mechanics.game_mechanic import GameMechanic
 from game.word_generator import WordGenerator
 from bot.log.path import LOG_PATH
 
-WEBHOOK_PORT = os.environment.get('WEBHOOK_PORT', 5000)
+WEBHOOK_PORT = os.environ.get('WEBHOOK_PORT', 5000)
 
 TELEGRAM_ACCESS_TOKEN = os.getenv('TELEGRAM_ACCESS_TOKEN')
 
