@@ -2,7 +2,6 @@
 Class for Telegram bot object.
 """
 
-from email import message
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, Filters
 from telegram.ext import CommandHandler
@@ -18,8 +17,9 @@ import logging
 
 
 class Bot:
-    def __init__(self, ACCESS_TOKEN, game_mechanic, players_db, words_db, LOG_PATH) -> None:
+    def __init__(self, ACCESS_TOKEN, WEBHOOK_PORT, game_mechanic, players_db, words_db, LOG_PATH) -> None:
         self._access_token = ACCESS_TOKEN
+        self._webhook_port = WEBHOOK_PORT
         self.game_mechanic = game_mechanic
         self._words = words_db
         self._players = players_db
@@ -371,7 +371,13 @@ class Bot:
         Main function to make the bot start to work.
         """
         try:
-            self._updater.start_polling()
+            self._updater.start_webhook(
+                listen='0.0.0.0',
+                port=int(self._webhook_port),
+                url_path=self._access_token
+                )
+            
+            self._updater.bot.setWebhook('https://scrambledwordsbot.herokuapp.com/' + self._access_token)
             print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
             logging.info(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
         except Exception as e:

@@ -1,7 +1,7 @@
 """
 Class defining the player database and its management functions
 """
-from sqlalchemy import Column, BigInteger, String, Boolean
+from sqlalchemy import Column, BigInteger, String, Boolean, Identity
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -15,7 +15,7 @@ class Player(Base):
     
     __tablename__ = 'players'
 
-    id = Column(BigInteger, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, Identity(start=1, cycle=True), primary_key=True)
     chat_id = Column(BigInteger, unique=True, nullable=False)
     is_admin = Column(Boolean, default=False)
     first_name = Column(String(20))

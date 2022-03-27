@@ -2,7 +2,7 @@
 Class to manage the words database.
 """
 
-from sqlalchemy import Column, String, Integer
+from sqlalchemy import Column, String, BigInteger, Identity
 from sqlalchemy.sql.expression import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -19,13 +19,12 @@ class Word(Base):
     __tablename__ = 'words'
 
     # Setting up the tables
-    id = Column(Integer, primary_key=True, autoincrement=True)
+    id = Column(BigInteger, Identity(start=1, cycle=True), primary_key=True)
     word = Column(String(20), unique=True, nullable=False)
     tip = Column(String(100), unique=True, nullable=False)
 
     def start_db(self) -> None:
         Base.metadata.create_all(self.engine)
-        self.get_word()
 
 
     def get_word(self) -> str:
