@@ -14,7 +14,7 @@ Dependencies:
 How to run:
 ===========
 - Install Python version 3.7
-- Install the dependencies above using pip install xx
+- Install the dependencies above using "pip install xxx"
 - Rename the settings.py.sample.py to 'settings.py' and insert your database access data and your Telegram API token into their variables.
 - Run main.py
 
