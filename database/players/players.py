@@ -1,7 +1,6 @@
 """
 Class defining the player database and its management functions
 """
-from sqlalchemy import create_engine
 from sqlalchemy import Column, BigInteger, String, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -9,27 +8,11 @@ from sqlalchemy.orm import sessionmaker
 # Set the initial things to create the database
 Base = declarative_base()
 
-
 # Defining the database body and its methods
 class Player(Base):
 
-    def __init__(self, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING) -> None:
-        super().__init__()
-        self.DB_HOST = DB_HOST
-        self.DB_PORT = DB_PORT
-        self.DB_NAME = DB_NAME
-        self.DB_USER = DB_USER
-        self.DB_PASSWORD = DB_PASSWORD
-        self.DB_ENCODING = DB_ENCODING
-        self.engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}',
-                            echo=False)
-        self.start_db()
-
+    engine = None
     
-    def start_db(self):
-        # Create the tables
-        Base.metadata.create_all(self.engine)
-
     __tablename__ = 'players'
 
     id = Column(BigInteger, primary_key=True, autoincrement=True)
@@ -40,6 +23,10 @@ class Player(Base):
     username = Column(String(15), unique=True, nullable=False)
     xp = Column(BigInteger, default=0)
     highest_score = Column(BigInteger, default=0)
+
+    def start_db(self):
+        # Create the tables
+        Base.metadata.create_all(self.engine)
 
 
     def check_if_player_exists(self, username):
@@ -67,7 +54,13 @@ class Player(Base):
 
         try:
             # Adding the player to the session
-            player = Player(chat_id=chat_id, username=username, first_name=first_name, last_name=last_name)
+            player = Player(
+                chat_id=chat_id, 
+                username=username, 
+                first_name=first_name, 
+                last_name=last_name
+            )
+
             session.add(player)
 
             # Sending the data to the database and closing the session
@@ -107,6 +100,24 @@ class Player(Base):
 
             player = session.query(Player).filter(Player.username == username).first()
             player.is_admin = True
+
+            session.commit()
+            session.close()
+            return True
+
+        except Exception as e:
+            return False, e.args
+
+    def revoke_admin(self, username):
+        """
+        Revokes admin status to a player.
+        """
+        try:
+            Session = sessionmaker(bind=self.engine)
+            session = Session()
+
+            player = session.query(Player).filter(Player.username == username).first()
+            player.is_admin = False
 
             session.commit()
             session.close()
@@ -182,6 +193,5 @@ class Player(Base):
 
         session.close()
         return stats
-
 
 

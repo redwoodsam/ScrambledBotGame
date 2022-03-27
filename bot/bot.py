@@ -44,6 +44,7 @@ class Bot:
         self._dispatcher.add_handler(CommandHandler("leaderboard", self._leaderboard))
         self._dispatcher.add_handler(CommandHandler("mystats", self._mystats))
         self._dispatcher.add_handler(CommandHandler("makeadmin", self._make_admin))
+        self._dispatcher.add_handler(CommandHandler("removeadmin", self._remove_admin))
         self._dispatcher.add_handler(CommandHandler("getword", self._get_word))
         self._dispatcher.add_handler(MessageHandler(Filters.text, callback=self._word_answer))
 
@@ -188,7 +189,8 @@ class Bot:
                 self._players.add_player(
                     chat_id=update.message.from_user.id, 
                     first_name=update.message.from_user.first_name.encode('utf-8', errors='ignore'),
-                    last_name=update.message.from_user.last_name, username=update.message.from_user.username
+                    last_name=update.message.from_user.last_name,
+                    username=update.message.from_user.username
                 )
 
         except Exception as e:
@@ -245,29 +247,39 @@ class Bot:
                 self._game.get_new_word()
                 self._send_game_status(update, context)
 
+
     def _add_word(self, update: Update, context: CallbackContext):
         """
         Command to add new words into the database. Only for admins
         """
-        if self._is_admin(update.message.from_user.username):
-            original_word = self._join_arguments(context.args)
-            pattern = re.search(r'^([a-zA-z]+)\s([\w\s\d.-]+)$', original_word)
-            word = pattern.group(1)
-            tip = pattern.group(2)
+        
+        try:
 
-            if pattern:
-                try:
-                    self._words.add_word(word, tip)
-                    update.message.reply_text(text=f'Word "{word}" added successfully!')
+            is_admin = self._is_admin(update.message.from_user.username)
 
-                except Exception as e:
-                    update.message.reply_text(f"An error occurred when adding the word: {e.args}")
+            if not is_admin:
+                update.message.reply_text(text=self.INSUFFICIENT_PERMISSIONS_TEXT)
+                logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
+                                f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
 
-        else:
-            update.message.reply_text(text=self.INSUFFICIENT_PERMISSIONS_TEXT,
-                                      reply_to_message_id=update.message.from_user.id)
-            logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
-                            f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
+            else:
+                original_word = self._join_arguments(context.args)
+                pattern = re.search(r'^([a-zA-z]+)\s([\w\s\d.-]+)$', original_word)
+                word = pattern.group(1)
+                tip = pattern.group(2)
+
+                if pattern:
+                    try:
+                        self._words.add_word(word, tip)
+                        update.message.reply_text(text=f'Word "{word}" added successfully!')
+
+                    except Exception as e:
+                        update.message.reply_text(f"An error occurred when adding the word: {e.args}")
+                
+        
+        except Exception as e:
+            update.message.reply_text(f"Error adding a new word: {e}")
+
 
     def _get_word(self, update: Update, context: CallbackContext):
         """
@@ -279,6 +291,7 @@ class Bot:
             update.message.reply_text(self.INSUFFICIENT_PERMISSIONS_TEXT)
             logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
                             f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
+
 
     def _make_admin(self, update: Update, context: CallbackContext):
         """
@@ -299,6 +312,27 @@ class Bot:
             logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
                             f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
 
+    
+    def _remove_admin(self, update: Update, context: CallbackContext):
+        """
+        Command to revoke a player admin. Only for admins
+        """
+        username = self._join_arguments(context.args).strip('@')
+        if self._is_admin(update.message.from_user.username):
+            if self._players.check_if_player_exists(username):
+                if self._is_admin(username):
+                    self._players.revoke_admin(username)
+                    update.message.reply_text(f"User @{username}'s admin status has been revoked successfully.")
+                else:
+                    update.message.reply_text(f"@{username} is not an admin.")
+            else:
+                update.message.reply_text("User not found, check the username and try again.")
+        else:
+            update.message.reply_text(self.INSUFFICIENT_PERMISSIONS_TEXT)
+            logging.warning(f"User: {update.message.from_user.username}, ID: {update.message.from_user.id} tried "
+                            f" {__name__} command and got: {self.INSUFFICIENT_PERMISSIONS_TEXT}")
+
+
     def _echo_word(self, update: Update, context: CallbackContext):
         """
         Command to test context arguments handling. Admins only
@@ -306,6 +340,7 @@ class Bot:
         phrase = self._join_arguments(context.args)
         pattern = re.search(r'^([a-zA-Z0-9]+)\s([\w\s\d,.]+)$', phrase)
         update.message.reply_text(f"You said: {phrase}\nGroup 1: {pattern.group(1)}\nGroup 2: {pattern.group(2)}")
+
 
     def _leaderboard(self, update: Update, context: CallbackContext):
         """
@@ -316,6 +351,7 @@ class Bot:
         for score in leaderboard:
             returned_leaderboard += score + "\n"
         update.message.reply_text(returned_leaderboard)
+
 
     def _mystats(self, update: Update, context: CallbackContext):
         """
@@ -328,6 +364,7 @@ class Bot:
             username}\nXP: {stats['xp']}\nCurrent score: {self._game.get_score()}\nHiscore: {stats["hiscore"]} points"""
 
         update.message.reply_text(returned_stats)
+
 
     def run(self):
         """

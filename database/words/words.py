@@ -3,7 +3,6 @@ Class to manage the words database.
 """
 
 from sqlalchemy import Column, String, Integer
-from sqlalchemy import create_engine
 from sqlalchemy.sql.expression import func
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -15,16 +14,7 @@ Base = declarative_base()
 
 class Word(Base):
 
-    def __init__(self, DB_HOST, DB_PORT, DB_NAME, DB_USER, DB_PASSWORD, DB_ENCODING):
-        self.DB_HOST = DB_HOST
-        self.DB_PORT = DB_PORT
-        self.DB_NAME = DB_NAME
-        self.DB_USER = DB_USER
-        self.DB_PASSWORD = DB_PASSWORD
-        self.DB_ENCODING = DB_ENCODING
-        self.engine = create_engine(f'mysql+pymysql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}?charset={DB_ENCODING}', echo=False)
-        self.start_db()
-        
+    engine = None
 
     __tablename__ = 'words'
 
@@ -100,7 +90,3 @@ class Word(Base):
             session.commit()
             session.close()
             return True
-
-
-
-
