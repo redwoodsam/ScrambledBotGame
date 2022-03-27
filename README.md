@@ -13,9 +13,9 @@ Dependencies:
 
 How to run:
 ===========
-
-- Inside the bot folder, rename the settings.py.sample.py to 'settings.py' and insert your access token in its variable.
-- Inside the database folder, rename the db_settings_sample.py to 'db_settings.py' and insert your database connection informations inside the variables.
+- Install Python version 3.7
+- Install the dependencies above using pip install xx
+- Rename the settings.py.sample.py to 'settings.py' and insert your database access data and your Telegram API token into their variables.
 - Run main.py
 
 Contact:
