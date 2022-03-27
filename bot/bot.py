@@ -375,7 +375,8 @@ class Bot:
                 listen='0.0.0.0',
                 port=int(self._webhook_port),
                 url_path=self._access_token,
-                webhook_url='https://scrambledwordsbot.herokuapp.com/' + self._access_token
+                webhook_url='https://scrambledwordsbot.herokuapp.com/' + self._access_token,
+                force_event_loop=True
                 )
 
             print(f"[*] BOT RUNNING ON LOCAL SERVER, TOKEN={self._access_token}!")
