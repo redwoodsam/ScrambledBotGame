@@ -2,7 +2,6 @@
 Class for Telegram bot object.
 """
 
-from email import message
 from telegram import InlineKeyboardMarkup, InlineKeyboardButton
 from telegram.ext import Updater, Filters
 from telegram.ext import CommandHandler
@@ -71,7 +70,7 @@ class Bot:
 
 
 
-    def _join_arguments(self, word: CallbackContext.args):
+    def _join_arguments(self, word: CallbackContext):
         """
         Tool function to join context arguments into a single word.
         """
