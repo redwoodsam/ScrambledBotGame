@@ -1,4 +1,3 @@
-from venv import create
 from bot.bot import Bot
 from database.words.words import Word
 from database.players.players import Player
