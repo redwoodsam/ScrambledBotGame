@@ -22,4 +22,3 @@ Contact:
 ========
 
 - Email: redwoodsamuel@gmail.com
-- Telegram: @redwoodsam
